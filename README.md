@@ -1,6 +1,6 @@
 # Notes Backend API
 
-Backend API untuk aplikasi Notes yang dibangun menggunakan Java Spring Boot. Project ini dibuat sebagai latihan backend Java dengan struktur yang rapi, REST API, PostgreSQL, dan rencana dokumentasi API menggunakan OpenAPI/Swagger.
+Backend API untuk aplikasi Notes yang dibangun menggunakan Java Spring Boot. Project ini dibuat sebagai latihan backend Java dengan struktur project yang rapi, REST API, PostgreSQL, validasi request, dan rencana dokumentasi API menggunakan OpenAPI/Swagger.
 
 ## Tech Stack
 
@@ -15,7 +15,7 @@ Backend API untuk aplikasi Notes yang dibangun menggunakan Java Spring Boot. Pro
 
 ## Project Status
 
-Project saat ini masih dalam tahap setup awal.
+Project saat ini sudah memiliki setup awal backend dan Users API sederhana.
 
 Progress:
 
@@ -23,15 +23,17 @@ Progress:
 * [x] Setup Maven
 * [x] Setup PostgreSQL dengan Docker
 * [x] Setup Spring Boot project
-* [ ] Setup struktur folder backend
-* [ ] Membuat API users
+* [x] Setup struktur folder backend
+* [x] Membuat Users API
+* [x] Menambahkan request validation
+* [x] Menambahkan response wrapper
+* [x] Menambahkan basic exception handling
 * [ ] Membuat authentication
+* [ ] Menambahkan JWT authentication
 * [ ] Membuat CRUD notes
 * [ ] Menambahkan OpenAPI/Swagger documentation
 
 ## Struktur Project
-
-Struktur project akan dikembangkan secara bertahap.
 
 ```txt
 src/main/java/com/notes/backend
@@ -43,9 +45,20 @@ src/main/java/com/notes/backend
 ├── entity
 ├── exception
 ├── repository
-├── security
 ├── service
 └── SpringBackendApplication.java
+```
+
+Keterangan singkat:
+
+```txt
+config      → konfigurasi aplikasi
+controller  → endpoint REST API
+dto         → request dan response object
+entity      → model database
+exception   → handler error aplikasi
+repository  → akses database
+service     → business logic
 ```
 
 ## Setup Database
@@ -67,6 +80,12 @@ Cek container:
 docker ps
 ```
 
+Masuk ke database:
+
+```bash
+docker exec -it notes-postgres psql -U postgres -d notes_db
+```
+
 ## Application Configuration
 
 Konfigurasi lokal berada di:
@@ -82,13 +101,15 @@ spring.application.name=spring-backend
 
 spring.datasource.url=jdbc:postgresql://localhost:5432/notes_db
 spring.datasource.username=postgres
-spring.datasource.password=
+spring.datasource.password=postgres
 spring.datasource.driver-class-name=org.postgresql.Driver
 
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.format_sql=true
 ```
+
+Catatan: konfigurasi ini hanya untuk development lokal.
 
 ## Menjalankan Project
 
@@ -110,9 +131,51 @@ Aplikasi berjalan di:
 http://localhost:8080
 ```
 
-## API Documentation
+## API Endpoints
 
-Dokumentasi API akan dibuat menggunakan OpenAPI/Swagger setelah endpoint utama mulai dibuat.
+### Users
+
+| Method | Endpoint          | Description     |
+| ------ | ----------------- | --------------- |
+| POST   | `/api/users`      | Create new user |
+| GET    | `/api/users`      | Get all users   |
+| GET    | `/api/users/{id}` | Get user by ID  |
+
+## Response Format
+
+Response sukses menggunakan format:
+
+```json
+{
+  "status": "success",
+  "message": "User created successfully",
+  "data": {}
+}
+```
+
+Response error menggunakan format:
+
+```json
+{
+  "status": "error",
+  "message": "Email is already used"
+}
+```
+
+## Request Validation
+
+Validasi request dilakukan pada DTO menggunakan Jakarta Bean Validation.
+
+Contoh validasi pada create user:
+
+* Username wajib diisi
+* Email wajib diisi dan harus valid
+* Password wajib diisi
+* Password memiliki panjang minimum
+
+## Dokumentasi API
+
+Dokumentasi API akan dibuat menggunakan OpenAPI/Swagger setelah endpoint utama selesai dibuat.
 
 ## Author
 
